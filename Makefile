@@ -13,14 +13,19 @@ GREEN=\x1b[1;32m
 RESET=\x1b[0m
 
 # Default and phony targets
-.default: build clean
+.default: all
 .PHONY: clean
 
+# Targets
+all: build clean
 build:
 	mkdir -p dist
-	@printf '%s>> Building%s' "$(GREEN)" "$(RESET)"
-	zig build-exe src/zdef.zig
+	@printf '%b>> Building%b\n' "$(GREEN)" "$(RESET)"
+	cd ./src/ && \
+		zig build-exe zdef.zig && \
+		mv zdef ../dist && \
+		cd ..
 
 clean:
-	@printf '%s>> Cleaning%s' "$(GREEN)" "$(RESET)"
+	@printf '%b>> Cleaning%b\n' "$(GREEN)" "$(RESET)"
 	rm src/*.o
