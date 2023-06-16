@@ -41,7 +41,11 @@
 const std = @import("std");
 
 // Vars
-const PrintHandle = enum { OUT, ERR };
+const RESET = "\x1b[0m";
+const BOLD = "\x1b[1m";
+const RED = "\x1b[31m";
+const YELLOW = "\x1b[33m";
+const PRINT_HANDLE = enum { OUT, ERR };
 const LOGO =
     \\  ____ __.-^/___   ____        __
     \\ |  _//__  //__ | |  _ \  ___ / _|
@@ -51,11 +55,6 @@ const LOGO =
     \\     /,-^
 ;
 
-const RESET = "\x1b[0m";
-const BOLD = "\x1b[1m";
-const RED = "\x1b[31m";
-const YELLOW = "\x1b[33m";
-
 // main: The main function
 pub fn main() !void {
     // Args
@@ -64,7 +63,7 @@ pub fn main() !void {
     // Check if has args
     if (args.skip()) {
         // NOTE: No args
-        bprintf(PrintHandle.OUT, "{s}{s}{s}{s}\n", .{ BOLD, YELLOW, LOGO, RESET });
+        bprintf(PRINT_HANDLE.OUT, "{s}{s}{s}{s}\n", .{ BOLD, YELLOW, LOGO, RESET });
     }
     // Loop over args
     while (args.next()) |arg| {
@@ -74,13 +73,13 @@ pub fn main() !void {
 }
 
 // bprintf: Print to stdout or stderr
-// @ARG: comptime PrintHandle
+// @ARG: comptime PRINT_HANDLE
 // @ARG comptime []const u8
 // @ARG: anytype
-pub fn bprintf(comptime handle: PrintHandle, comptime fmt: []const u8, args: anytype) void {
+pub fn bprintf(comptime handle: PRINT_HANDLE, comptime fmt: []const u8, args: anytype) void {
     var out = switch (handle) {
-        PrintHandle.OUT => std.io.getStdOut().writer(),
-        PrintHandle.ERR => std.io.getStdErr().writer(),
+        PRINT_HANDLE.OUT => std.io.getStdOut().writer(),
+        PRINT_HANDLE.ERR => std.io.getStdErr().writer(),
     };
     var buffer = std.io.bufferedWriter(out);
     nosuspend buffer.writer().print(fmt, args) catch {
